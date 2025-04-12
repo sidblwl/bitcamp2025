@@ -17,8 +17,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-# Shared pause state
-PAUSE_STATE = {"paused": False}
+
+# Shared pause state including a reason
+PAUSE_STATE = {"paused": False, "pause_reason": None}
 MISS_COUNT = {"count": 0}
 HIT_COUNT = {"count": 0}
 MAX_BUFFER = 1
@@ -48,33 +49,35 @@ async def cv_detect(payload: ImagePayload):
             MISS_COUNT["count"] = 0
             print(f"✅ Studying detected! Hit #{HIT_COUNT['count']}")
 
-        # Pause if distracted 3 times in a row
+        # Auto-pause: if distracted for MAX_BUFFER consecutive checks and not already paused
         if MISS_COUNT["count"] >= MAX_BUFFER and not PAUSE_STATE["paused"]:
             PAUSE_STATE["paused"] = True
+            PAUSE_STATE["pause_reason"] = "auto"
             HIT_COUNT["count"] = 0  # clear resume count
-            print("🔴 Auto-paused due to 3 consecutive distractions.")
+            print("🔴 Auto-paused due to consecutive distractions.")
 
-        # Resume if focused 3 times in a row after being paused
-        if HIT_COUNT["count"] >= MAX_BUFFER and PAUSE_STATE["paused"]:
+        # Auto-resume: if focused for MAX_BUFFER consecutive checks and we're paused auto
+        if HIT_COUNT["count"] >= MAX_BUFFER and PAUSE_STATE["paused"] and PAUSE_STATE["pause_reason"] == "auto":
             PAUSE_STATE["paused"] = False
+            PAUSE_STATE["pause_reason"] = None
             MISS_COUNT["count"] = 0
-            print("✅ Auto-resumed after 3 focused frames.")
+            print("✅ Auto-resumed after consecutive focused frames.")
 
         return {
             "isStudying": is_studying,
-            "isPaused": PAUSE_STATE["paused"]
+            "isPaused": PAUSE_STATE["paused"],
+            "pauseReason": PAUSE_STATE.get("pause_reason")
         }
 
     except Exception as e:
         return {"error": str(e)}
 
-
-
 # POST /pause-timer
 @app.post("/pause-timer")
 async def pause_timer(request: Request):
     PAUSE_STATE["paused"] = True
-    print("🔴 Study timer paused by extension!")
+    PAUSE_STATE["pause_reason"] = "manual"  # Mark as a manual pause
+    print("🔴 Study timer paused by extension (manual)!")
     return {"message": "Timer paused"}
 
 # GET /get-pause-state
@@ -86,5 +89,7 @@ async def get_pause_state(request: Request):
 @app.post("/reset-pause-state")
 async def reset_pause_state():
     PAUSE_STATE["paused"] = False
-    print("✅ RESUMED")
+    PAUSE_STATE["pause_reason"] = None
+    print("✅ RESUMED (manual reset)")
     return {"message": "Pause reset"}
+

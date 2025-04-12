@@ -20,25 +20,26 @@ function WebcamDetector({ webcamRef, isFullscreen, setIsPaused, setChatMessages,
 
         const data = await res.json();
 
-        if (data.isPaused && !isPaused) {
-          setIsPaused(true);
-          console.log("📴 Pause triggered by CV detection");
+        // For auto-resume, only clear pause if the current pause reason is auto
+        if (!data.isPaused && isPaused && data.pauseReason !== "manual") {
+          setIsPaused(false);
+          console.log("▶️ Back in the zone (auto-resume)");
+          setChatMessages(prev => [
+            ...prev,
+            { from: "system", text: "You’re locked in again. Keep going!" }
+          ]);
+        }
 
+        // If auto pause is triggered
+        if (data.isPaused && !isPaused && data.pauseReason === "auto") {
+          setIsPaused(true);
+          console.log("📴 Auto pause triggered by CV detection");
           setChatMessages(prev => [
             ...prev,
             { from: "system", text: "Caught slacking! Focus up 🧐" }
           ]);
         }
-
-        if (!data.isPaused && isPaused) {
-          setIsPaused(false);
-          console.log("▶️ Back in the zone");
-
-          setChatMessages(prev => [
-            ...prev,
-            { from: "system", text: "You’re locked in again. Keep going" }
-          ]);
-        }
+        // If manual pause is active, let it stay paused (don’t auto-resume).
       } catch (err) {
         console.error("❌ Error sending webcam image:", err);
       }

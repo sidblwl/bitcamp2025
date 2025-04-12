@@ -30,26 +30,24 @@ function App() {
   }, [studyMode, isPaused]);
 
   // 🔥 NEW: Poll Flask backend every 3s for pause state
+// Polling effect in App.js (partial snippet)
   useEffect(() => {
     const pollPauseState = async () => {
       try {
         const res = await fetch('http://localhost:5001/get-pause-state');
         const data = await res.json();
 
-        // Pause if backend says paused and we aren't already paused
+        // Only update frontend pause state if it differs
         if (data.paused && !isPaused) {
           console.log("📴 Pause triggered by backend!");
           setIsPaused(true);
-        
-          // 🧠 Add a cheeky motivational message
           setChatMessages(prev => [
             ...prev,
             { from: "system", text: "Caught slacking! Back to work, champ 💪" }
           ]);
         }
         
-        // Resume if backend says not paused and we are paused
-        if (!data.paused && isPaused) {
+        if (!data.paused && isPaused && data.pauseReason !== "manual") {
           console.log("▶️ Resume triggered by backend!");
           setIsPaused(false);
           setChatMessages(prev => [
@@ -65,7 +63,7 @@ function App() {
 
     const intervalId = setInterval(() => {
       if (studyMode) {
-        pollPauseState(); // 🔁 Always poll during study mode
+        pollPauseState(); // Always poll during study mode
       }
     }, 3000);
 
