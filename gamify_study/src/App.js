@@ -111,6 +111,9 @@ function App() {
       )}
 
       <div className="container">
+        {!studyMode && (
+          <h1 className="app-title">cram.cam</h1>
+        )}
         <WebcamDetector webcamRef={webcamRef} isFullscreen={studyMode} />
 
         {!studyMode && (

@@ -12,9 +12,9 @@ body.dark {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* instead of center */
   min-height: 100vh;
-  padding: 2rem;
+  gap: 2rem; /* adds space between webcam and button */
 }
 
 /* Webcam container */
@@ -25,8 +25,10 @@ body.dark {
 }
 
 .webcam.default {
-  width: 640px;
-  height: 360px;
+  /* 640px
+  360px */
+  width: 768px; 
+  height: 432px; 
 }
 
 .webcam.fullscreen {
@@ -117,4 +119,26 @@ body.dark .ready-btn {
 
 body.dark .ready-btn:hover {
   background-color: #7b9db7;
+}
+
+.app-title {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 3rem;
+  font-weight: 900;
+  color: #111;
+  background-color: #fff7a8; /* pastel yellow highlighter */
+  /* pastel pink */
+  /* background-color: #ffdbe8; */
+  /* pastel blue */
+  /* background-color: #d6f0ff; */
+  padding: 0.3em 0.8em;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease;
+}
+
+body.dark .app-title {
+  background-color: #ffe080; /* slightly deeper pastel for dark mode */
+  color: #222;
 }
