@@ -3,8 +3,14 @@
     "name": "StudyGuard",
     "version": "1.0",
     "description": "Pauses your study timer if you open distracting sites.",
-    "permissions": ["tabs"],
-    "host_permissions": ["<all_urls>"],
+    "permissions": [
+      "tabs"
+    ],
+    "host_permissions": [
+      "http://localhost:5001/*",
+      "http://127.0.0.1:5001/*",
+      "<all_urls>"
+    ],
     "background": {
       "service_worker": "background.js"
     },
