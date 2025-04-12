@@ -26,35 +26,38 @@ function App() {
     return () => clearInterval(interval);
   }, [studyMode, isPaused]);
 
-  // 🔥 NEW: Poll Flask backend every 3s for pause state triggered by Chrome extension
+  // 🔥 NEW: Poll Flask backend every 3s for pause state
   useEffect(() => {
     const pollPauseState = async () => {
       try {
-        const res = await fetch('http://localhost:5000/get-pause-state');
+        const res = await fetch('http://localhost:5001/get-pause-state');
         const data = await res.json();
 
-        if (data.paused) {
-          console.log("📴 Pause triggered by extension!");
+        // Pause if backend says paused and we aren't already paused
+        if (data.paused && !isPaused) {
+          console.log("📴 Pause triggered by backend!");
           setIsPaused(true);
-
-          // Reset pause state on backend
-          await fetch('http://localhost:5000/reset-pause-state', {
-            method: 'POST'
-          });
         }
+
+        // Resume if backend says not paused and we are paused
+        if (!data.paused && isPaused) {
+          console.log("▶️ Resume triggered by backend!");
+          setIsPaused(false);
+        }
+
       } catch (err) {
         console.error('Error polling pause state:', err);
       }
     };
 
     const intervalId = setInterval(() => {
-      if (studyMode && !isPaused) {
-        pollPauseState();
+      if (studyMode) {
+        pollPauseState(); // 🔁 Always poll during study mode
       }
     }, 3000);
 
     return () => clearInterval(intervalId);
-  }, [studyMode, isPaused]); // 🔥 NEW
+  }, [studyMode, isPaused]);
 
   const formatTime = () => {
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');

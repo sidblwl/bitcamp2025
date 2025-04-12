@@ -6,7 +6,7 @@ const DISTRACTING_SITES = [
     /reddit\.com/
   ];
   
-  const API_ENDPOINT = "http://localhost:5000/pause-timer";
+  const API_ENDPOINT = "http://localhost:5001/pause-timer";
   
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab.url && DISTRACTING_SITES.some(regex => regex.test(tab.url))) {
