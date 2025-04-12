@@ -7,9 +7,8 @@ from detector import is_user_studying
 
 app = Flask(__name__)
 
-# CORS setup to allow React frontend
+# CORS setup to allow all origins (minimal configuration)
 CORS(app, resources={r"/*": {"origins": "*"}})
-
 
 # Global flag to track paused state
 PAUSE_STATE = {"paused": False}
@@ -40,12 +39,16 @@ def cv_detect():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Minimal fix: Update /pause-timer to include the CORS header manually
 @app.route("/pause-timer", methods=["POST"])
 def pause_timer():
     try:
         PAUSE_STATE["paused"] = True
         print("🔴 Study timer paused by extension!")
-        return jsonify({"message": "Timer paused"}), 200
+        response = jsonify({"message": "Timer paused"})
+        # Minimal manual CORS header to allow the extension's request to come through
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return response, 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
