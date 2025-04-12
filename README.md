@@ -13,3 +13,24 @@ Same with group study. You guys can have the same class so you’ll have the sam
 There should probably be a separate xp for group studying so the xp has the same scale for both people
 
 OH how about in the message que after 30 minutes it rewards you with a five minute break and you can choose to accept it or rack it up and then you can redeem it later after you’ve studying 2 hours take a 20 minute break
+
+Features:
+ - Adding a sticky note on the screen when its break time that says "Out for Break :)"
+ - Highlighted buttons and pastel theme
+
+Not Studying
+ - Getting up
+ - Looking on your phone
+ - Staying still for too long (having a still there? Notification)
+ - Looking away for too long
+ - Talking to another person
+
+Have a "block only" and "allow only" section
+Block Only Mode: 
+ - Social Media (Instagram, Twitter/X, Facebook, TikTok, Threads, Pinterest)
+ - Video & Streaming (YouTube, Netflix, Hulu, Disney+, HBO Max, Twitch)
+ - Games & Game Launchers (Steam, Epic Games Launcher, Battle.net, Riot Client (League of Legends, Valorant), Xbox Game Bar, Roblox, Minecraft)
+ - Discord
+
+Allow Only Mode: 
+ - 
