@@ -2,14 +2,14 @@
     "manifest_version": 3,
     "name": "StudyGuard",
     "version": "1.0",
-    "description": "Pauses your study timer if you open distracting sites.",
+    "description": "Pauses the study timer when distracting sites are opened.",
     "permissions": ["tabs"],
     "host_permissions": ["<all_urls>"],
     "background": {
       "service_worker": "background.js"
     },
     "action": {
-      "default_title": "StudyGuard is running"
+      "default_title": "StudyGuard"
     }
   }
   

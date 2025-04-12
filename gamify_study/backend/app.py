@@ -7,8 +7,8 @@ from detector import is_user_studying
 
 app = Flask(__name__)
 
-# CORS setup to allow all origins (minimal configuration)
-CORS(app, resources={r"/*": {"origins": "*"}})
+# ✅ This applies proper CORS headers to ALL routes
+CORS(app)
 
 # Global flag to track paused state
 PAUSE_STATE = {"paused": False}
@@ -39,25 +39,30 @@ def cv_detect():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Minimal fix: Update /pause-timer to include the CORS header manually
-@app.route("/pause-timer", methods=["POST"])
+@app.route("/pause-timer", methods=["POST", "OPTIONS"])
 def pause_timer():
+    if request.method == "OPTIONS":
+        return '', 200
+
     try:
         PAUSE_STATE["paused"] = True
         print("🔴 Study timer paused by extension!")
-        response = jsonify({"message": "Timer paused"})
-        # Minimal manual CORS header to allow the extension's request to come through
-        response.headers["Access-Control-Allow-Origin"] = "*"
-        return response, 200
+        return jsonify({"message": "Timer paused"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/get-pause-state", methods=["GET"])
+@app.route("/get-pause-state", methods=["GET", "OPTIONS"])
 def get_pause_state():
-    return jsonify(PAUSE_STATE)
+    if request.method == "OPTIONS":
+        return '', 200
 
-@app.route("/reset-pause-state", methods=["POST"])
+    return jsonify(PAUSE_STATE), 200
+
+@app.route("/reset-pause-state", methods=["POST", "OPTIONS"])
 def reset_pause_state():
+    if request.method == "OPTIONS":
+        return '', 200
+
     PAUSE_STATE["paused"] = False
     print("✅ Pause state reset")
     return jsonify({"message": "Pause reset"}), 200

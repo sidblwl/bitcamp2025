@@ -12,12 +12,14 @@ function App() {
   const [isPaused, setIsPaused] = useState(false);
   const [seconds, setSeconds] = useState(0);
 
+  // Set theme from local storage on initial render
   useEffect(() => {
     const saved = localStorage.getItem('theme') || 'dark';
     setTheme(saved);
     document.body.className = saved;
   }, []);
 
+  // Increment the timer each second if study mode is active and not paused
   useEffect(() => {
     let interval;
     if (studyMode && !isPaused) {
@@ -26,7 +28,8 @@ function App() {
     return () => clearInterval(interval);
   }, [studyMode, isPaused]);
 
-  // 🔥 NEW: Poll Flask backend every 3s for pause state triggered by Chrome extension
+  // Poll the Flask backend every 3 seconds for pause state updates.
+  // This effect checks if an extension-triggered pause has been set on the backend.
   useEffect(() => {
     const pollPauseState = async () => {
       try {
@@ -37,7 +40,7 @@ function App() {
           console.log("📴 Pause triggered by extension!");
           setIsPaused(true);
 
-          // Reset pause state on backend
+          // Reset the backend pause state so that future detections can trigger a new pause
           await fetch('http://localhost:5000/reset-pause-state', {
             method: 'POST'
           });
@@ -54,7 +57,7 @@ function App() {
     }, 3000);
 
     return () => clearInterval(intervalId);
-  }, [studyMode, isPaused]); // 🔥 NEW
+  }, [studyMode, isPaused]);
 
   const formatTime = () => {
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -79,13 +82,19 @@ function App() {
 
       {studyMode && (
         <div className="timer-control">
-          Study Timer: {formatTime()}
+          <span>Study Timer: {formatTime()}</span>
           <span
-            style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: '1.3rem' }}
+            style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: '1.3rem', marginLeft: '1rem' }}
             onClick={() => setIsPaused((p) => !p)}
           >
             {isPaused ? '▶' : '||'}
           </span>
+        </div>
+      )}
+
+      {studyMode && isPaused && (
+        <div style={{ color: 'red', margin: '1rem 0' }}>
+          Paused due to distraction!
         </div>
       )}
 
@@ -97,7 +106,6 @@ function App() {
 
       <div className="container">
         <WebcamDetector webcamRef={webcamRef} isFullscreen={studyMode} />
-
         {!studyMode && (
           <button className="ready-btn" onClick={handleStartStudy}>
             Ready to Study?
