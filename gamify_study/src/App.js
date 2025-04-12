@@ -85,7 +85,19 @@ function App() {
           Study Timer: {formatTime()}
           <span
             style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: '1.3rem' }}
-            onClick={() => setIsPaused((p) => !p)}
+            onClick={async () => {
+              const newPaused = !isPaused;
+              setIsPaused(newPaused);
+
+              try {
+                await fetch(`http://localhost:5001/${newPaused ? 'pause-timer' : 'reset-pause-state'}`, {
+                  method: 'POST'
+                });
+                console.log(newPaused ? "⏸️ Manually paused" : "▶️ Manually resumed");
+              } catch (err) {
+                console.error("❌ Error syncing pause state with backend:", err);
+              }
+            }}
           >
             {isPaused ? '▶' : '||'}
           </span>
