@@ -1,0 +1,120 @@
+body.light {
+  background-color: #fff9f0;
+  color: #333;
+}
+
+body.dark {
+  background-color: #1c1c1e;
+  color: #f0f0f0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* Webcam container */
+.webcam {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.webcam.default {
+  width: 640px;
+  height: 360px;
+}
+
+.webcam.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  z-index: 0;
+}
+
+/* Timer control */
+.timer-control {
+  position: fixed;
+  top: 1.2rem;
+  left: 1.2rem;
+  font-size: 1.2rem;
+  background-color: rgba(255, 255, 255, 0.4);
+  color: #111;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(6px);
+}
+
+body.dark .timer-control {
+  background-color: rgba(28, 28, 30, 0.6);
+  color: #fefefe;
+}
+
+/* End button */
+.end-btn {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  font-size: 0.9rem;
+  background-color: #f8caca;
+  color: #5b0000;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+}
+
+.end-btn:hover {
+  background-color: #fca5a5;
+}
+
+body.dark .end-btn {
+  background-color: #5c1a1a;
+  color: #fff;
+}
+
+body.dark .end-btn:hover {
+  background-color: #9f4444;
+}
+
+/* Ready button */
+.ready-btn {
+  margin-top: 2rem;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border: none;
+  background-color: #aad1e6;
+  color: #002b36;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.ready-btn:hover {
+  background-color: #cce9f5;
+}
+
+body.dark .ready-btn {
+  background-color: #607b96;
+  color: white;
+}
+
+body.dark .ready-btn:hover {
+  background-color: #7b9db7;
+}
