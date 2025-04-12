@@ -11,6 +11,8 @@ function App() {
   const [studyMode, setStudyMode] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [chatMessages, setChatMessages] = useState([]);
+  const chatRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('theme') || 'dark';
@@ -37,12 +39,22 @@ function App() {
         if (data.paused && !isPaused) {
           console.log("📴 Pause triggered by backend!");
           setIsPaused(true);
+        
+          // 🧠 Add a cheeky motivational message
+          setChatMessages(prev => [
+            ...prev,
+            { from: "system", text: "Caught slacking! Back to work, champ 💪" }
+          ]);
         }
-
+        
         // Resume if backend says not paused and we are paused
         if (!data.paused && isPaused) {
           console.log("▶️ Resume triggered by backend!");
           setIsPaused(false);
+          setChatMessages(prev => [
+            ...prev,
+            { from: "system", text: "Alright, you're back in focus. Let’s get it!" }
+          ]);
         }
 
       } catch (err) {
@@ -58,6 +70,14 @@ function App() {
 
     return () => clearInterval(intervalId);
   }, [studyMode, isPaused]);
+
+  useEffect(() => {
+    const el = chatRef.current;
+    if (!el) return;
+  
+    // Always scroll to bottom on new message
+    el.scrollTop = el.scrollHeight;
+  }, [chatMessages]);
 
   const formatTime = () => {
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -111,6 +131,10 @@ function App() {
       )}
 
       <div className="container">
+        {!studyMode && (
+          <h1 className="app-title">cram.cam</h1>
+        )}
+
         <WebcamDetector webcamRef={webcamRef} isFullscreen={studyMode} />
 
         {!studyMode && (
@@ -119,6 +143,25 @@ function App() {
           </button>
         )}
       </div>
+      {studyMode && (
+        <div className="chat-box">
+          <h3 className="chat-title">📣 Study Chat</h3>
+          <div className="chat-messages" ref={chatRef}>
+            {chatMessages.map((msg, i) => {
+              const indexFromBottom = chatMessages.length - i;
+              const faded = indexFromBottom === 2 || indexFromBottom === 3;
+              return (
+                <div
+                  key={i}
+                  className={`chat-message ${msg.from || 'system'} ${faded ? 'faded' : ''}`}
+                >
+                  {msg.text}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </>
   );
 }

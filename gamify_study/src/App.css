@@ -1,3 +1,4 @@
+/* === THEME === */
 body.light {
   background-color: #fff9f0;
   color: #333;
@@ -8,16 +9,18 @@ body.dark {
   color: #f0f0f0;
 }
 
+/* === LAYOUT === */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 100vh;
-  padding: 2rem;
+  padding: 4rem 2rem 2rem;
+  gap: 2rem;
 }
 
-/* Webcam container */
+/* === WEBCAM === */
 .webcam {
   border-radius: 16px;
   overflow: hidden;
@@ -25,8 +28,10 @@ body.dark {
 }
 
 .webcam.default {
-  width: 640px;
-  height: 360px;
+  width: 480px;
+  height: 270px;
+  z-index: 1;
+  transition: all 0.4s ease; /* only animate return */
 }
 
 .webcam.fullscreen {
@@ -37,9 +42,10 @@ body.dark {
   height: 100vh;
   border-radius: 0;
   z-index: 0;
+  transition: none !important; /* 🔥 disables animation on grow */
 }
 
-/* Timer control */
+/* === TIMER === */
 .timer-control {
   position: fixed;
   top: 1.2rem;
@@ -62,7 +68,7 @@ body.dark .timer-control {
   color: #fefefe;
 }
 
-/* End button */
+/* === END BUTTON === */
 .end-btn {
   position: fixed;
   top: 1.2rem;
@@ -92,9 +98,8 @@ body.dark .end-btn:hover {
   background-color: #9f4444;
 }
 
-/* Ready button */
+/* === READY BUTTON === */
 .ready-btn {
-  margin-top: 2rem;
   padding: 12px 24px;
   font-size: 1rem;
   border: none;
@@ -117,4 +122,121 @@ body.dark .ready-btn {
 
 body.dark .ready-btn:hover {
   background-color: #7b9db7;
+}
+
+/* === CHAT BOX === */
+.chat-box {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  padding: 1rem;
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+body.dark .chat-box {
+  background-color: rgba(28, 28, 30, 0.25);
+  color: white;
+}
+
+.chat-title {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  opacity: 0.9;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 150px; /* this should control the height/scrolling */
+  gap: 0.3em;
+  scroll-behavior: smooth;
+  padding-right: 4px;
+}
+
+.chat-message {
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.chat-message:last-child {
+  opacity: 1;
+  font-weight: 600;
+  color: #c92a2a;
+}
+
+.chat-box {
+  position: fixed;
+  bottom: 1.2rem;
+  left: 1.2rem;
+  width: 300px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  font-size: 0.9rem;
+  max-height: 150px;
+}
+
+body.dark .chat-box {
+  background-color: rgba(28, 28, 30, 0.8);
+  color: #eee;
+}
+
+.chat-title {
+  margin: 0 0 0.5rem;
+  font-weight: bold;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 4.5em; /* ~3 lines */
+  gap: 0.3em;
+  transition: max-height 0.3s ease;
+  scroll-behavior: smooth;
+}
+
+/* On hover: show scroll and unfade */
+.chat-messages:hover {
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.chat-message {
+  transition: opacity 0.3s ease;
+  padding-right: 4px;
+  line-height: 1.5;
+}
+
+/* Fade older lines */
+.chat-message.faded {
+  opacity: 0.35;
+}
+
+/* Remove fade on hover */
+.chat-messages:hover .chat-message.faded {
+  opacity: 1;
+}
+
+/* Scrollbar style */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.3);
+  border-radius: 3px;
+}
+.chat-messages:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.6);
 }
