@@ -11,22 +11,28 @@ def is_user_studying(frame):
     # Convert to RGB (MediaPipe expects RGB input)
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = face_detector.process(rgb)
-
+    
     if results.detections:
-        for detection in results.detections:
-            # Draw face bounding box for debug purposes
-            mp_drawing.draw_detection(frame, detection)
-
-        # ✅ Show debug popup
-        cv2.imwrite("debug_output.jpg", frame)
-        cv2.waitKey(1000)  # Show for 1 second (1000 ms)
-        cv2.destroyAllWindows()
-
         return True
     else:
-        # Also show image when nothing is detected (optional)
-        cv2.imwrite("debug_output.jpg", frame)
-        cv2.waitKey(1000)
-        cv2.destroyAllWindows()
-
         return False
+
+    # if results.detections:
+    #     for detection in results.detections:
+    #         # Draw face bounding box for debug purposes
+    #         mp_drawing.draw_detection(frame, detection)
+
+    #     # ✅ Show debug popup
+    #     cv2.imwrite("debug_output.jpg", frame)
+    #     cv2.waitKey(1000)  # Show for 1 second (1000 ms)
+    #     cv2.destroyAllWindows()
+
+    #     return True
+    # else:
+    #     # Also show image when nothing is detected (optional)
+    #     cv2.imwrite("debug_output.jpg", frame)
+
+    #     cv2.waitKey(1000)
+    #     cv2.destroyAllWindows()
+
+    #     return False

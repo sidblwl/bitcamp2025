@@ -12,6 +12,7 @@ function App() {
   const [isPaused, setIsPaused] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [chatMessages, setChatMessages] = useState([]);
+  const [chatHovered, setChatHovered] = useState(false);
   const chatRef = useRef(null);
 
   useEffect(() => {
@@ -75,9 +76,11 @@ function App() {
     const el = chatRef.current;
     if (!el) return;
   
-    // Always scroll to bottom on new message
-    el.scrollTop = el.scrollHeight;
-  }, [chatMessages]);
+    // Always scroll to bottom after messages change or after re-hovering
+    setTimeout(() => {
+      el.scrollTop = el.scrollHeight;
+    }, 0);
+  }, [chatMessages, chatHovered]);  
 
   const formatTime = () => {
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -135,7 +138,14 @@ function App() {
           <h1 className="app-title">cram.cam</h1>
         )}
 
-        <WebcamDetector webcamRef={webcamRef} isFullscreen={studyMode} />
+      <WebcamDetector
+        webcamRef={webcamRef}
+        isFullscreen={studyMode}
+        studyMode={studyMode}
+        isPaused={isPaused}
+        setIsPaused={setIsPaused}
+        setChatMessages={setChatMessages}
+      />
 
         {!studyMode && (
           <button className="ready-btn" onClick={handleStartStudy}>
@@ -146,14 +156,22 @@ function App() {
       {studyMode && (
         <div className="chat-box">
           <h3 className="chat-title">📣 Study Chat</h3>
-          <div className="chat-messages" ref={chatRef}>
+          <div
+            className="chat-messages"
+            ref={chatRef}
+            onMouseEnter={() => setChatHovered(true)}
+            onMouseLeave={() => setChatHovered(false)}
+          >
             {chatMessages.map((msg, i) => {
               const indexFromBottom = chatMessages.length - i;
-              const faded = indexFromBottom === 2 || indexFromBottom === 3;
+              const faded =
+                !chatHovered && indexFromBottom > 1;
               return (
                 <div
                   key={i}
-                  className={`chat-message ${msg.from || 'system'} ${faded ? 'faded' : ''}`}
+                  className={`chat-message ${msg.from || 'system'} ${
+                    faded ? 'faded' : ''
+                  }`}
                 >
                   {msg.text}
                 </div>
@@ -162,6 +180,8 @@ function App() {
           </div>
         </div>
       )}
+      
+      {isPaused && <div className="pause-overlay" />}
     </>
   );
 }
