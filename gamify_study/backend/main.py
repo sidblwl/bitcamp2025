@@ -52,12 +52,12 @@ async def cv_detect(payload: ImagePayload):
         # Auto-pause: if distracted for MAX_BUFFER consecutive checks and not already paused
         if MISS_COUNT["count"] >= MAX_BUFFER and not PAUSE_STATE["paused"]:
             PAUSE_STATE["paused"] = True
-            PAUSE_STATE["pause_reason"] = "auto"
+            PAUSE_STATE["pause_reason"] = "face"
             HIT_COUNT["count"] = 0  # clear resume count
             print("🔴 Auto-paused due to consecutive distractions.")
 
         # Auto-resume: if focused for MAX_BUFFER consecutive checks and we're paused auto
-        if HIT_COUNT["count"] >= MAX_BUFFER and PAUSE_STATE["paused"] and PAUSE_STATE["pause_reason"] == "auto":
+        if HIT_COUNT["count"] >= MAX_BUFFER and PAUSE_STATE["paused"] and PAUSE_STATE["pause_reason"] == "face":
             PAUSE_STATE["paused"] = False
             PAUSE_STATE["pause_reason"] = None
             MISS_COUNT["count"] = 0
@@ -76,9 +76,29 @@ async def cv_detect(payload: ImagePayload):
 @app.post("/pause-timer")
 async def pause_timer(request: Request):
     PAUSE_STATE["paused"] = True
-    PAUSE_STATE["pause_reason"] = "manual"  # Mark as a manual pause
-    print("🔴 Study timer paused by extension (manual)!")
+    PAUSE_STATE["pause_reason"] = "user"  # Mark as a user pause
+    print("🔴 Study timer paused by user")
     return {"message": "Timer paused"}
+
+@app.post("/site-detect")
+async def pause_timer(request: Request):
+    data = await request.json()
+    site = data.get("site", "unknown")
+    full_url = data.get("fullUrl", "unknown")
+
+    PAUSE_STATE["paused"] = True
+    PAUSE_STATE["pause_reason"] = "site"
+    PAUSE_STATE["site"] = site
+    PAUSE_STATE["url"] = full_url
+
+    print(f"🔴 Auto-paused due to user visiting: {site} ({full_url})")
+    return {"message": f"Timer paused due to {site}"}
+
+@app.post("/site-closed")
+async def reset_pause_state():
+    PAUSE_STATE["paused"] = False
+    print("✅ Auto-resumed due to user closing disallowed site")
+    return {"message": "Pause reset"}
 
 # GET /get-pause-state
 @app.get("/get-pause-state")
@@ -90,6 +110,7 @@ async def get_pause_state(request: Request):
 async def reset_pause_state():
     PAUSE_STATE["paused"] = False
     PAUSE_STATE["pause_reason"] = None
-    print("✅ RESUMED (manual reset)")
+    print("✅ Backend Reset")
+    print(f"PAUSE STATE: {PAUSE_STATE["paused"]}, PAUSE REASON: {PAUSE_STATE["pause_reason"]}")
     return {"message": "Pause reset"}
 

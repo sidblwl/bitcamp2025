@@ -52,7 +52,7 @@ body.dark {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: inherit;   /* ✨ Video inherits the rounded corners */
+  border-radius: inherit; 
 }
 
 .webcam.fullscreen {
@@ -275,7 +275,7 @@ body.dark .purple-btn {
 .end-btn {
   position: fixed;
   bottom: 38px;
-  right: 80px;
+  right: 2rem;
   background: linear-gradient(
     to top,
     rgb(255, 179, 179) 75%,   /* soft pinkish red */
@@ -292,7 +292,7 @@ body.dark .purple-btn {
 .play-btn {
   position: fixed;
   bottom: 38px;
-  right: 250px;
+  right: 12rem;
   background: linear-gradient(
   to top,
   rgb(191, 255, 255) 75%,   /* light pastel cyan */
@@ -317,7 +317,7 @@ body.dark .purple-btn {
   border: 2px solid #ebe6de;
   border-radius: 12px;
   box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+  padding: 0.5rem 1rem 1rem 1rem;
   font-family: 'Patrick Hand', cursive;
   display: flex;
   flex-direction: column;
@@ -330,7 +330,7 @@ body.dark .purple-btn {
 }
 
 .chat-title {
-  font-size: 1.5rem;
+  font-size: 2rem;
   text-align: center;
   color: #333;
   font-weight: bold;
@@ -347,8 +347,8 @@ body.dark .purple-btn {
 
 /* Individual message styling */
 .chat-message {
-  background-color: #fff9b1;
-  border-left: 4px solid #ffe066;
+  background-color: #d0e1ff;
+  border-left-color: #a3c2ff;
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
@@ -360,17 +360,6 @@ body.dark .purple-btn {
 /* Faded older messages */
 .chat-message.faded {
   opacity: 0.5;
-}
-
-/* Different sender colors */
-.chat-message.system {
-  background-color: #d0e1ff;
-  border-left-color: #a3c2ff;
-}
-
-.chat-message.user {
-  background-color: #c7f5d6;
-  border-left-color: #94e1bc;
 }
 
 .stickyNotes{

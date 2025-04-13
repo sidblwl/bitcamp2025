@@ -6,10 +6,18 @@ const DISTRACTING_SITES = [
     /reddit\.com/
   ];
   
-  const PAUSE_ENDPOINT = "http://127.0.0.1:5001/pause-timer";
-  const RESUME_ENDPOINT = "http://127.0.0.1:5001/reset-pause-state";  
+  const PAUSE_ENDPOINT = "http://127.0.0.1:5001/site-detect";
+  const RESUME_ENDPOINT = "http://127.0.0.1:5001/site-closed";  
   
   let currentlyPaused = false;
+
+  function getDomain(url) {
+    try {
+      return new URL(url).hostname.replace("www.", "");
+    } catch {
+      return "";
+    }
+  }
   
   // Called when a tab is updated (navigated or reloaded)
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -18,10 +26,11 @@ const DISTRACTING_SITES = [
   
       if (!currentlyPaused) {
         currentlyPaused = true;
+        const site = getDomain(tab.url);
         fetch(PAUSE_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ reason: "site-block", url: tab.url })
+          body: JSON.stringify({ reason: "site-block", site, fullUrl: tab.url })
         })
           .then(res => res.text())
           .then(text => console.log("✅ Paused:", text))

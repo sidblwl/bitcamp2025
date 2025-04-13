@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Webcam from 'react-webcam';
 
-function WebcamDetector({ webcamRef, isFullscreen, setIsPaused, setChatMessages, studyMode, isPaused }) {
+function WebcamDetector({ webcamRef, isFullscreen, setIsPaused, setChatMessages, studyMode, isPaused, pauseReason}) {
   useEffect(() => {
     const sendWebcamImage = async () => {
       if (!webcamRef.current) return;
@@ -21,22 +21,22 @@ function WebcamDetector({ webcamRef, isFullscreen, setIsPaused, setChatMessages,
         const data = await res.json();
 
         // For auto-resume, only clear pause if the current pause reason is auto
-        if (!data.isPaused && isPaused && data.pauseReason !== "manual") {
+        if (!data.isPaused && isPaused && data.pauseReason !== "user" && data.pauseReason !== "site") {
           setIsPaused(false);
-          console.log("▶️ Back in the zone (auto-resume)");
+          console.log("▶️ Face detected again, auto-resumed");
           setChatMessages(prev => [
             ...prev,
-            { from: "system", text: "You’re locked in again. Keep going!" }
+            { from: "system", text: "We missed you! Let’s pick up where you left off."}
           ]);
         }
 
         // If auto pause is triggered
-        if (data.isPaused && !isPaused && data.pauseReason === "auto") {
+        if (data.isPaused && !isPaused && data.pauseReason === "face") {
           setIsPaused(true);
           console.log("📴 Auto pause triggered by CV detection");
           setChatMessages(prev => [
             ...prev,
-            { from: "system", text: "Caught slacking! Focus up 🧐" }
+            { from: "system", text: "Where’d you go? Your goals are waiting 🎯" }
           ]);
         }
         // If manual pause is active, let it stay paused (don’t auto-resume).

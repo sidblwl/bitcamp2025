@@ -11,6 +11,7 @@ function MainPage() {
   const [theme, setTheme] = useState('light');
   const [studyMode, setStudyMode] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [pauseReason, setPauseReason] = useState("user");
   const [seconds, setSeconds] = useState(0);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatHovered, setChatHovered] = useState(false);
@@ -35,30 +36,50 @@ function MainPage() {
     return () => clearInterval(interval);
   }, [studyMode, isPaused]);
 
+  const pauseMessages = {"user": "You paused the timer, hopefully a well earned break",
+    "site": "Caught you on a distracting site! Back to work, you got this!",
+    "face": "Where’d you go? Your goals are waiting 🎯"
+  }
+
+  const resumeMessages = {"user": "Feeling recharged? Let’s keep the momentum going!",
+    "site": "Glad you made it back—now let’s stay locked in 🔒",
+    "face": "We missed you! Let’s pick up where you left off."
+  }
+
   // 🔥 NEW: Poll Flask backend every 3s for pause state
 // Polling effect in App.js (partial snippet)
   useEffect(() => {
     const pollPauseState = async () => {
+      console.log("checking pause state")
       try {
         const res = await fetch('http://localhost:5001/get-pause-state');
         const data = await res.json();
 
+        console.log(data)
+        console.log("data.paused: " + data.paused)
+        console.log("data.pause_reason: " + data.pause_reason)
+
+        setPauseReason(data.pause_reason)
+
+        console.log("msgString: " + pauseMessages[data.pause_reason])
+
         // Only update frontend pause state if it differs
-        if (data.paused && !isPaused) {
+        if (data.paused && !isPaused && data.pause_reason == "site") {
           console.log("📴 Pause triggered by backend!");
           setIsPaused(true);
+          let siteName = data.site
           setChatMessages(prev => [
             ...prev,
-            { from: "system", text: "Caught slacking! Back to work, champ 💪" }
+            { from: "system", text: siteName + " is tempting, but your goals are more important 💪 You’ve got this! Block it here if it helps: " + data.url}
           ]);
         }
         
-        if (!data.paused && isPaused && data.pauseReason !== "manual") {
+        if (!data.paused && isPaused && data.pause_reason == "site") {
           console.log("▶️ Resume triggered by backend!");
           setIsPaused(false);
           setChatMessages(prev => [
             ...prev,
-            { from: "system", text: "Alright, you're back in focus. Let’s get it!" }
+            { from: "system", text: resumeMessages[data.pause_reason]}
           ]);
         }
 
@@ -97,11 +118,11 @@ function MainPage() {
     setIsPaused(false);
   };
 
-  const handleEndStudy = () => {
-    setStudyMode(false);
-    setSeconds(0);
-    setIsPaused(false);
-  };
+  // const handleEndStudy = () => {
+  //   setStudyMode(false);
+  //   setSeconds(0);
+  //   setIsPaused(false);
+  // };
 
   function toggleTheme(){
     if(theme === 'light'){
@@ -117,9 +138,28 @@ function MainPage() {
         <>
           <div className="timer-control">
             Study Timer: {formatTime()}
-            <span
-              style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: '100px' }}
-              onClick={async () => {
+          </div>
+        </>
+      )}
+
+      {studyMode && (
+        <>
+          <button className="end-btn stickyNotes" onClick={async () => {
+                setStudyMode(false);
+                setSeconds(0);
+                setIsPaused(false);
+
+                try {
+                  await fetch("http://localhost:5001/reset-pause-state", {
+                    method: 'POST'
+                  });
+                } catch (err) {
+                  console.error("❌ Error syncing pause state with backend:", err);
+                }
+              }}>
+            End Sesh
+          </button>
+          <button className="play-btn stickyNotes" onClick={async () => {
                 const newPaused = !isPaused;
                 setIsPaused(newPaused);
 
@@ -131,23 +171,8 @@ function MainPage() {
                 } catch (err) {
                   console.error("❌ Error syncing pause state with backend:", err);
                 }
-              }}
-            >
-            </span>
-          </div>
-          {/* <button className="purple-btn light-mode-btn" onClick={() => {toggleTheme()}}>
-              {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
-          </button> */}
-        </>
-      )}
-
-      {studyMode && (
-        <>
-          <button className="end-btn stickyNotes" onClick={handleEndStudy}>
-            End Sesh
-          </button>
-          <button className="play-btn stickyNotes" onClick={handleEndStudy}>
-            Play
+              }}>
+            {isPaused ? '▶' : '| |'}
           </button>
         </>
       )}
@@ -164,10 +189,23 @@ function MainPage() {
         isPaused={isPaused}
         setIsPaused={setIsPaused}
         setChatMessages={setChatMessages}
+        pauseMessages={pauseMessages}
+        pauseReason={pauseReason}
       />
 
         {!studyMode && (
-          <button className="green-btn ready-btn" onClick={handleStartStudy}>
+          <button className="green-btn ready-btn" onClick={async () => {
+            setStudyMode(true);
+            setIsPaused(false);
+            try {
+              await fetch("http://localhost:5001/reset-pause-state", {
+                method: 'POST'
+              });
+              console.log("reset backend and started study mode");
+            } catch (err) {
+              console.error("❌ Error syncing pause state with backend:", err);
+            }
+          }}>
             Ready to Study?
           </button>
         )}
@@ -183,12 +221,11 @@ function MainPage() {
           >
             {chatMessages.map((msg, i) => {
               const isFaded = !chatHovered && i < chatMessages.length - 1;
-              const sender = msg.from || 'system';
 
               return (
                 <div
                   key={i}
-                  className={`chat-message ${sender} ${isFaded ? 'faded' : ''}`}
+                  className={`chat-message ${isFaded ? 'faded' : ''}`}
                 >
                   {msg.text}
                 </div>
