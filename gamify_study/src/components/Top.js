@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function Top({theme, setTheme, dailyTotal}) {
+function Top({theme, setTheme, dailyTotal, totalXP}) {
 
     function formatTimeFromSeconds(totalSeconds) {
         const hours = Math.floor(totalSeconds / 3600);
@@ -38,7 +38,7 @@ function Top({theme, setTheme, dailyTotal}) {
             Daily Total: {formatTimeFromSeconds(dailyTotal)}
         </button>
         <button className="blue-btn totalXP-btn" >
-            Daily Total: {formatTimeFromSeconds(dailyTotal)}
+            Total XP: {formatTimeFromSeconds(totalXP)}
         </button>
     </>
   );

@@ -35,7 +35,7 @@ const Dashboard = () => {
       </button>
       </Link>
       <h1 className="title">dashboard</h1>
-      <button className="light-mode-btn" onClick={() => {toggleTheme()}}>
+      <button className="purple-btn light-mode-btn" onClick={() => {toggleTheme()}}>
           {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
       </button>
       <button className="cyan-btn dailyTotal-btn" >
