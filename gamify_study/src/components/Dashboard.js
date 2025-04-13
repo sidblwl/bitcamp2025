@@ -89,17 +89,29 @@ function Dashboard() {
             <div className="filter-item" key={idx}>
               <img src={filter.src} alt={filter.name} />
               <p>{filter.name}</p>
-              <button className="filterOption-btn green-btn" onClick={async () => {
-                try {
-                  await fetch("http://localhost:5001/reset-pause-state", {
-                    method: 'POST'
-                  });
-                } catch (err) {
-                  console.error("❌ Error syncing pause state with backend:", err);
-                }
-              }}>
-                Preview
-              </button>
+                <button
+                  className="filterOption-btn green-btn"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch("http://localhost:5005/preview-filter", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          filterPath: `${window.location.origin}${filter.src}`
+                        }),
+                      });
+
+                      const data = await response.json();
+                      if (!response.ok) {
+                        throw new Error(data.error || "Something went wrong");
+                      }
+                    } catch (err) {
+                      console.error("❌ Error starting webcam preview:", err);
+                    }
+                  }}
+                >
+                  Preview
+                </button>
               <button className="filterOption-btn red-btn">
                 {filter.requiredXP + "XP"}
               </button>
