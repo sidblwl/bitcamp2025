@@ -101,7 +101,7 @@ body.dark {
 .dailyTotal-btn {
   margin-bottom: 30px;
   margin-top: 5px;
-  margin-left: 70px;
+  margin-left: 110px;
 }
 
 .totalXP-btn {
@@ -529,4 +529,8 @@ button{
   width: 80px;
   height: 80px;
   object-fit: contain;
+}
+
+.filterOption-btn{
+  font-size: 1.4rem;
 }

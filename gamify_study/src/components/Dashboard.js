@@ -56,6 +56,7 @@ function Dashboard() {
         <div className="dashboard-stats">
           <h1 className="big-header">Daily Total: {formatTime(dailyTotal)}</h1>
           <p>Overall Total: {formatTime(overallTime)}</p>
+          <h1 className="big-header">Total XP: {dailyXP}</h1>
         </div>
 
         <div className="dashboard-graph">
@@ -82,12 +83,26 @@ function Dashboard() {
 
       {/* Filter Gallery */}
       <div className="dashboard-gallery">
-        <h2>Unlocked Filters</h2>
+        <h2>Filters</h2>
         <div className="filter-gallery">
           {filterImages.map((filter, idx) => (
             <div className="filter-item" key={idx}>
               <img src={filter.src} alt={filter.name} />
               <p>{filter.name}</p>
+              <button className="filterOption-btn green-btn" onClick={async () => {
+                try {
+                  await fetch("http://localhost:5001/reset-pause-state", {
+                    method: 'POST'
+                  });
+                } catch (err) {
+                  console.error("❌ Error syncing pause state with backend:", err);
+                }
+              }}>
+                Preview
+              </button>
+              <button className="filterOption-btn red-btn">
+                {filter.requiredXP + "XP"}
+              </button>
             </div>
           ))}
         </div>
