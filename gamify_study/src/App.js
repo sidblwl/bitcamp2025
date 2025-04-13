@@ -2,24 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 import WebcamDetector from './components/WebcamDetector';
-import ThemeToggle from './components/ThemeToggle';
+import Top from './components/Top'
 
 function App() {
   const webcamRef = useRef(null);
 
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light'); // now actively used
   const [studyMode, setStudyMode] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [seconds, setSeconds] = useState(0);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [chatHovered, setChatHovered] = useState(false);
-  const chatRef = useRef(null);
+  const [dailyTotal, setDailyTotal] = useState(0);
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme') || 'dark';
-    setTheme(saved);
-    document.body.className = saved;
-  }, []);
+    document.body.className = theme;
+  }, [theme]);
 
   useEffect(() => {
     let interval;
@@ -30,30 +26,20 @@ function App() {
   }, [studyMode, isPaused]);
 
   // 🔥 NEW: Poll Flask backend every 3s for pause state
-// Polling effect in App.js (partial snippet)
   useEffect(() => {
     const pollPauseState = async () => {
       try {
         const res = await fetch('http://localhost:5001/get-pause-state');
         const data = await res.json();
 
-        // Only update frontend pause state if it differs
         if (data.paused && !isPaused) {
           console.log("📴 Pause triggered by backend!");
           setIsPaused(true);
-          setChatMessages(prev => [
-            ...prev,
-            { from: "system", text: "Caught slacking! Back to work, champ 💪" }
-          ]);
         }
-        
-        if (!data.paused && isPaused && data.pauseReason !== "manual") {
+
+        if (!data.paused && isPaused) {
           console.log("▶️ Resume triggered by backend!");
           setIsPaused(false);
-          setChatMessages(prev => [
-            ...prev,
-            { from: "system", text: "Alright, you're back in focus. Let’s get it!" }
-          ]);
         }
 
       } catch (err) {
@@ -63,22 +49,12 @@ function App() {
 
     const intervalId = setInterval(() => {
       if (studyMode) {
-        pollPauseState(); // Always poll during study mode
+        pollPauseState();
       }
     }, 3000);
 
     return () => clearInterval(intervalId);
   }, [studyMode, isPaused]);
-
-  useEffect(() => {
-    const el = chatRef.current;
-    if (!el) return;
-  
-    // Always scroll to bottom after messages change or after re-hovering
-    setTimeout(() => {
-      el.scrollTop = el.scrollHeight;
-    }, 0);
-  }, [chatMessages, chatHovered]);  
 
   const formatTime = () => {
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -97,28 +73,20 @@ function App() {
     setIsPaused(false);
   };
 
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
+
   return (
     <>
-      <ThemeToggle theme={theme} setTheme={setTheme} />
+      <Top theme={theme} toggleTheme={toggleTheme} dailyTotal={dailyTotal}></Top>
 
       {studyMode && (
         <div className="timer-control">
           Study Timer: {formatTime()}
           <span
             style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: '1.3rem' }}
-            onClick={async () => {
-              const newPaused = !isPaused;
-              setIsPaused(newPaused);
-
-              try {
-                await fetch(`http://localhost:5001/${newPaused ? 'pause-timer' : 'reset-pause-state'}`, {
-                  method: 'POST'
-                });
-                console.log(newPaused ? "⏸️ Manually paused" : "▶️ Manually resumed");
-              } catch (err) {
-                console.error("❌ Error syncing pause state with backend:", err);
-              }
-            }}
+            onClick={() => setIsPaused((p) => !p)}
           >
             {isPaused ? '▶' : '||'}
           </span>
@@ -132,18 +100,7 @@ function App() {
       )}
 
       <div className="container">
-        {!studyMode && (
-          <h1 className="app-title">cram.cam</h1>
-        )}
-
-      <WebcamDetector
-        webcamRef={webcamRef}
-        isFullscreen={studyMode}
-        studyMode={studyMode}
-        isPaused={isPaused}
-        setIsPaused={setIsPaused}
-        setChatMessages={setChatMessages}
-      />
+        <WebcamDetector webcamRef={webcamRef} isFullscreen={studyMode} />
 
         {!studyMode && (
           <button className="ready-btn" onClick={handleStartStudy}>
@@ -151,35 +108,6 @@ function App() {
           </button>
         )}
       </div>
-      {studyMode && (
-        <div className="chat-box">
-          <h3 className="chat-title">📣 Study Chat</h3>
-          <div
-            className="chat-messages"
-            ref={chatRef}
-            onMouseEnter={() => setChatHovered(true)}
-            onMouseLeave={() => setChatHovered(false)}
-          >
-            {chatMessages.map((msg, i) => {
-              const indexFromBottom = chatMessages.length - i;
-              const faded =
-                !chatHovered && indexFromBottom > 1;
-              return (
-                <div
-                  key={i}
-                  className={`chat-message ${msg.from || 'system'} ${
-                    faded ? 'faded' : ''
-                  }`}
-                >
-                  {msg.text}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-      
-      {isPaused && <div className="pause-overlay" />}
     </>
   );
 }
