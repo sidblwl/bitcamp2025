@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function Top({theme, toggleTheme, dailyTotal}) {
 
@@ -16,6 +17,11 @@ function Top({theme, toggleTheme, dailyTotal}) {
 
   return (
     <>
+        <Link to="/dashboard">
+        <button className="dashboard-btn">
+            Dashboard
+        </button>
+        </Link>
         <h1 className="title">Stay Focused</h1>
         <button className="dailyTotal" onClick={toggleTheme}>
             Daily Total: {formatTimeFromSeconds(dailyTotal)}

@@ -62,3 +62,29 @@ body.dark {
 .light-mode-btn:hover {
   filter: brightness(1.2);
 }
+
+
+.dashboard-btn {
+  position: fixed;
+  top: 25px;
+  left: 20px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 179, 179, 0.6) 0%,     /* light pastel red */
+    rgba(255, 179, 179, 0.6) 87%,
+    rgba(255, 85, 85, 0.6) 95%,      /* mid red */
+    rgba(255, 51, 51, 0.4) 100%      /* stronger red with less opacity */
+  );  
+  color: #000;
+  font-family: 'Patrick Hand', sans-serif;
+  padding: 3px 10px;
+  border: none;
+  border-radius: 2px;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.light-mode-btn:hover {
+  filter: brightness(1.2);
+}
