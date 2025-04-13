@@ -22,7 +22,7 @@ app.add_middleware(
 PAUSE_STATE = {"paused": False, "pause_reason": None}
 MISS_COUNT = {"count": 0}
 HIT_COUNT = {"count": 0}
-MAX_BUFFER = 1
+MAX_BUFFER = 2
 
 # Base64 image input model
 class ImagePayload(BaseModel):

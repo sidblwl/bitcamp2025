@@ -248,7 +248,9 @@ body.dark .purple-btn {
 } */
 
 .timer-control {
-  margin-top: 15px;
+  position: fixed;
+  left: 2rem;
+  margin-top: 1rem;
   font-size: 60px;
   color: #111;
   font-family: 'Patrick Hand', sans-serif;
@@ -274,8 +276,8 @@ body.dark .purple-btn {
 
 .end-btn {
   position: fixed;
-  bottom: 38px;
-  right: 2rem;
+  bottom: 1rem;
+  right: 1rem;
   background: linear-gradient(
     to top,
     rgb(255, 179, 179) 75%,   /* soft pinkish red */
@@ -291,8 +293,8 @@ body.dark .purple-btn {
 
 .play-btn {
   position: fixed;
-  bottom: 38px;
-  right: 12rem;
+  bottom: 1rem;
+  right: 10rem;
   background: linear-gradient(
   to top,
   rgb(191, 255, 255) 75%,   /* light pastel cyan */
@@ -309,8 +311,8 @@ body.dark .purple-btn {
 
 .chat-box {
   position: fixed;
-  bottom: 2rem;
-  left: 2rem;
+  bottom: 1rem;
+  left: 1rem;
   width: 400px;
   max-height: 30vh;
   background-color: #fffef9;
@@ -381,4 +383,33 @@ button{
   border-radius: 2px;
   font-size: 35px;
   font-weight: 600;
+}
+
+.subInfo {
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-family: 'Patrick Hand', sans-serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: #333;
+  opacity: 0.95;
+}
+
+.subInfo h1 {
+  margin: 0;
+  padding: 0.4rem 1rem;
+  border-radius: 10px;
+  background: linear-gradient(
+    to top,
+    rgb(255, 255, 150) 75%,   /* soft yellow base */
+    rgb(255, 255, 115) 92%,   /* pastel yellow mid */
+    rgb(255, 248, 49) 100%    /* bright top edge */
+  );
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  color: #111;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }

@@ -13,9 +13,12 @@ function MainPage() {
   const [isPaused, setIsPaused] = useState(false);
   const [pauseReason, setPauseReason] = useState("user");
   const [seconds, setSeconds] = useState(0);
+  const [xp, setXP] = useState(0);
+  const [distracted, setDistracted] = useState(0);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatHovered, setChatHovered] = useState(false);
   const [dailyTotal, setDailyTotal] = useState(0);
+  const [dailyXP, setDailyXP] = useState(0);
   const chatRef = useRef(null);
 
   useEffect(() => {
@@ -30,11 +33,34 @@ function MainPage() {
 
   useEffect(() => {
     let interval;
-    if (studyMode && !isPaused) {
-      interval = setInterval(() => setSeconds((s) => s + 1), 1000);
-    }
+
+    if (studyMode) {
+      if (!isPaused) {
+        interval = setInterval(() => {
+          setSeconds((s) => s + 1);
+        }, 1000);
+      } else {
+        interval = setInterval(() => {
+          if (pauseReason !== "user") {
+            setDistracted((d) => d + 1);
+          }
+        }, 1000);
+    }}
+
     return () => clearInterval(interval);
-  }, [studyMode, isPaused]);
+  }, [studyMode, isPaused]); 
+
+  useEffect(() => {
+    if (studyMode && !isPaused && seconds > 0 && seconds % 60 === 0) {
+      setXP((xp) => xp + 10);
+    }
+  }, [seconds, studyMode, isPaused]);
+
+  useEffect(() => {
+    if (studyMode && isPaused && distracted > 0 && distracted % 60 === 0) {
+      setXP((xp) => Math.max(0, xp - 15));
+    }
+  }, [distracted, studyMode, isPaused]);
 
   const pauseMessages = {"user": "You paused the timer, hopefully a well earned break",
     "site": "Caught you on a distracting site! Back to work, you got this!",
@@ -108,8 +134,14 @@ function MainPage() {
   }, [chatMessages, chatHovered]);  
 
   const formatTime = () => {
-    const m = String(Math.floor(seconds / 60)).padStart(2, '0');
-    const s = String(seconds % 60).padStart(2, '0');
+    const m = String(Math.floor(Math.floor(seconds) / 60)).padStart(2, '0');
+    const s = String(Math.floor(seconds) % 60).padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
+  const formatDistractedTime = () => {
+    const m = String(Math.floor(Math.floor(distracted) / 60)).padStart(2, '0');
+    const s = String(Math.floor(distracted) % 60).padStart(2, '0');
     return `${m}:${s}`;
   };
 
@@ -139,6 +171,10 @@ function MainPage() {
           <div className="timer-control">
             Study Timer: {formatTime()}
           </div>
+          <div className="subInfo">
+            <h1>Distracted: {formatDistractedTime()}</h1>
+            <h1>XP: {Math.floor(xp)}</h1>
+          </div>
         </>
       )}
 
@@ -146,7 +182,10 @@ function MainPage() {
         <>
           <button className="end-btn stickyNotes" onClick={async () => {
                 setStudyMode(false);
+                setDailyTotal(dailyTotal + Math.floor(seconds))
+                setDailyXP(dailyXP + Math.floor(xp));
                 setSeconds(0);
+                setXP(0);
                 setIsPaused(false);
 
                 try {
@@ -162,6 +201,7 @@ function MainPage() {
           <button className="play-btn stickyNotes" onClick={async () => {
                 const newPaused = !isPaused;
                 setIsPaused(newPaused);
+                setPauseReason("user")
 
                 try {
                   await fetch(`http://localhost:5001/${newPaused ? 'pause-timer' : 'reset-pause-state'}`, {
@@ -179,7 +219,7 @@ function MainPage() {
 
       <div className="container">
         {!studyMode && (
-          <Top theme={theme} setTheme={setTheme} dailyTotal={dailyTotal}></Top>
+          <Top theme={theme} setTheme={setTheme} dailyTotal={dailyTotal} dailyXP={dailyXP}></Top>
         )}
 
       <WebcamDetector
