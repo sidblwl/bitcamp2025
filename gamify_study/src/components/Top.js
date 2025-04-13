@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function Top({theme, toggleTheme, dailyTotal}) {
+function Top({theme, setTheme, dailyTotal}) {
 
     function formatTimeFromSeconds(totalSeconds) {
         const hours = Math.floor(totalSeconds / 3600);
@@ -15,19 +15,30 @@ function Top({theme, toggleTheme, dailyTotal}) {
         ].join(':');
     }
 
+    function toggleTheme(){
+        if(theme === 'light'){
+            setTheme('dark')
+        } else{
+            setTheme('light')
+        }
+    }
+
   return (
     <>
         <Link to="/dashboard">
-        <button className="dashboard-btn">
+        <button className="red-btn dashboard-btn">
             Dashboard
         </button>
         </Link>
-        <h1 className="title">Stay Focused</h1>
-        <button className="dailyTotal" onClick={toggleTheme}>
+        <h1 className={theme === 'light' ? "title" : "title-dark"}>cram.cam</h1>
+        <button className="purple-btn light-mode-btn" onClick={() => {toggleTheme()}}>
+            {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+        </button>
+        <button className="cyan-btn dailyTotal-btn" >
             Daily Total: {formatTimeFromSeconds(dailyTotal)}
         </button>
-        <button className="light-mode-btn" onClick={toggleTheme}>
-            {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+        <button className="blue-btn totalXP-btn" >
+            Daily Total: {formatTimeFromSeconds(dailyTotal)}
         </button>
     </>
   );
