@@ -25,7 +25,11 @@ function Top({theme, setTheme, dailyTotal, dailyXP}) {
 
   return (
     <>
-        <Link to="/dashboard">
+        <Link to="/dashboard"
+          state={{
+            dailyTotal,
+            dailyXP,
+          }}>
         <button className="red-btn dashboard-btn">
             Dashboard
         </button>
