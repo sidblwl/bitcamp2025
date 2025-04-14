@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import base64
 import cv2
 import numpy as np
-from detector import is_user_studying  # ✅ keep your existing detector.py
+from detector import is_user_studying 
 
 app = FastAPI()
 

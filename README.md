@@ -1,36 +1,57 @@
-This is our 2025 Bitcamp Project
+## Inspiration
 
-## Brainstorm
+We built **cram.cam** because it’s way too easy to get distracted. You sit down to study but then suddenly end up deep in a YouTube rabbit hole. We thought to ourselves, what if study time felt like a game? What if leaving your seat or opening a distracting website had real consequences? That’s when we decided to make cram.cam, a gamified study app that uses computer vision and a Chrome extension to help students stay locked in.
 
-There should be a message board at the bottom that pops up whenever you’re not studying. Like it’ll stop the timer and be like “using your phone” it could also give you pop ups of encouraging messages
+## What it does
 
-You should be able to set the rules of what qualifies as you not studying. Like sometimes I’ll use my phone to post on Instagram for S2S but I’m still being productive and doing work. So what we should do is before your study seshes you can choose what counts as not studying. For example if you open instagram, or discord, Minecraft on your computer then your not studying. And the app can detect that. You can set “not studying” stuff as your default and add things later on and then when you have group study seshes you can both/all contribute to the rules of what doesn’t count as studying
+**cram.cam** is a gamified study app that keeps students focused by tracking both their attention and their browser activity.
 
-“Studying” consists of writing notes, going on elms to read lecture notes, etc. but there should also be a way to earn more xp by getting quizzes correct. Like you upload your class material it turns it into a quiz and if you’re able to get a good score you can earn even more xp points. This works because more “time” studying doesn’t always mean your productively studying but completing a quiz means you get it
-So more speed running xp encourages you to study faster and get more xp rather then just siting in place and fake studying 
+- Uses webcam-based computer vision to detect if you're actively studying
+- Detects when you leave your seat or look away
+- Chrome extension flags sites like Netflix, YouTube, and Tiktok
+- Earn 10 XP for every minute you’re focused
+- Lose 15 XP if you're distracted
+- Red overlay activates when focus is lost
+- A live chat hypes you up or calls you out in real time
+- A dashboard displays your daily and weekly study time 
+- You can unlock and apply virtual accessories (like hats and glasses) to your webcam avatar while studying, based on XP
 
-Same with group study. You guys can have the same class so you’ll have the same quizzes
-There should probably be a separate xp for group studying so the xp has the same scale for both people
+## How we built it
 
-OH how about in the message que after 30 minutes it rewards you with a five minute break and you can choose to accept it or rack it up and then you can redeem it later after you’ve studying 2 hours take a 20 minute break
+- **Frontend**: Built in React with a UI inspired by physical study notes, with pastel colors, highlighter text, sticky notes, and a grid paper background.
+- **Backend**: Developed with FastAPI, using OpenCV to detect whether the user is present on camera. . Created a Python script with OpenCV to detect facial landmarks and detect whether the user is present on camera and studying. Developed a FastAPI backend to serve webcam data from the frontend to OpenCV and return an analysis of the user's actions (studying or procrastinating), which the frontend uses to alert the user that it knows they are not locked in :). It also manages pause state, XP logic, notifications, and counters for how long the user is studying or distracted. 
+- **Chrome Extension**: Written in JavaScript, it listens for tab updates and POSTs to the backend if a distracting site is opened.
+- **Webcam Polling**: Every 3 seconds, the frontend sends a base64 screenshot to the backend, which returns whether the user is focused or not, and polls the backend to see if the pause endpoint has been activated, either by the python script or the extension.
+- **Dashboard**: A separate component shows XP progress, daily/weekly stats, and available filter accessories based on unlocks.
 
-Features:
- - Adding a sticky note on the screen when its break time that says "Out for Break :)"
- - Highlighted buttons and pastel theme
+## Challenges we ran into
 
-Not Studying
- - Getting up
- - Looking on your phone
- - Staying still for too long (having a still there? Notification)
- - Looking away for too long
- - Talking to another person
+- Handling `CORS` issues between the Chrome extension and the FastAPI server.
+- Designing a single polling loop that merges webcam detection and backend pause logic without creating race conditions.
+- Preventing webcam-triggered auto-resume from overriding manual or extension-based pauses.
+- Making the computer vision detection reliable across lighting, angles, and different laptops.
+- Building a fun UI that doesn't feel cheesy or overwhelming while still giving clear feedback.
+- Getting dashboard stats and virtual accessories to update in sync with XP and timer state
 
-Have a "block only" and "allow only" section
-Block Only Mode: 
- - Social Media (Instagram, Twitter/X, Facebook, TikTok, Threads, Pinterest)
- - Video & Streaming (YouTube, Netflix, Hulu, Disney+, HBO Max, Twitch)
- - Games & Game Launchers (Steam, Epic Games Launcher, Battle.net, Riot Client (League of Legends, Valorant), Xbox Game Bar, Roblox, Minecraft)
- - Discord
+## Accomplishments that we're proud of
 
-Allow Only Mode: 
- - Elms
+- Fully implemented webcam-based presence detection and made it work seamlessly in a React frontend.
+- Created a working Chrome extension from scratch that detects and reports distracting websites in real time.
+- Built a live XP tracker with motivational and sarcastic chat messages to keep you accountable.
+- Designed an interface that looks and feels like a real study space, with highlighters, sticky notes, and pastel visuals.
+- Developed a clean, interactive dashboard that shows daily and weekly progress and lets users unlock study accessories
+
+## What we learned
+
+- How to integrate `OpenCV` into a modern web stack using `FastAPI`.
+- How to build and communicate between a `Chrome extension` and an external backend.
+- Better state management in React when pulling in multiple async data sources.
+- Designing UI/UX with a strong metaphor, making cram.cam feel like a digital notes page.
+- Balancing functionality and aesthetic, especially with stats, overlays, and visual feedback all updating in real time
+
+## What's next for cram.cam
+
+- Add leaderboards to see how your focus stacks up against friends.
+- Add XP leveling and unlockable rewards or study themes.
+- Build a mobile app for more focusing on different apps.
+- Expand filter accessory options and customize webcam overlays  
